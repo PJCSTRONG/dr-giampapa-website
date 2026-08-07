@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found — Vincent C. Giampapa, MD, FACS" noindex>
+  <section class="nf">
+    {/* VERBAL-BRAND.md microcopy table — the one place the dry humour is allowed out. */}
+    <h1 class="nf__h1">This page doesn&rsquo;t exist.<br />Unlike aging, that&rsquo;s permanent.</h1>
+    <a class="btn btn--primary" href="/">Back to the beginning</a>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 32px;
+    min-height: 70vh;
+    padding: 136px var(--gutter) var(--section-y);
+    max-width: calc(var(--measure) + var(--gutter) * 2);
+    margin-inline: auto;
+  }
+  .nf__h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(34px, 5vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+  }
+</style>

@@ -1,0 +1,88 @@
+---
+import { SITE } from '../data/site.js';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Set true on pages that should stay out of the index. */
+  noindex?: boolean;
+  /** Fully-formed JSON-LD nodes to merge into the @graph. */
+  schema?: Record<string, unknown>[];
+  /** Absolute or root-relative URL of the social share image. */
+  image?: string;
+}
+
+const {
+  title = SITE.title,
+  description = SITE.description,
+  noindex = false,
+  schema = [],
+  image = '/og.png',
+} = Astro.props;
+
+// Always trailing-slashed, to match `build.format: 'directory'` and the URLs
+// the sitemap emits. A canonical that disagrees with the sitemap is a wasted
+// signal at best and a duplicate-content flag at worst.
+const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const canonical = new URL(path, SITE.origin).href;
+const ogImage = new URL(image, SITE.origin).href;
+
+/**
+ * A single @graph with @id cross-references beats a pile of disconnected
+ * script tags: it lets a crawler resolve "the Person who authored these Books
+ * and speaks in these Videos" as one entity rather than four.
+ */
+const graph = [
+  {
+    '@type': 'WebSite',
+    '@id': `${SITE.origin}/#website`,
+    url: `${SITE.origin}/`,
+    name: SITE.name,
+    inLanguage: 'en-US',
+    publisher: { '@id': `${SITE.origin}/#person` },
+  },
+  {
+    '@type': 'WebPage',
+    '@id': `${canonical}/#webpage`,
+    url: canonical,
+    name: title,
+    description,
+    isPartOf: { '@id': `${SITE.origin}/#website` },
+    about: { '@id': `${SITE.origin}/#person` },
+    inLanguage: 'en-US',
+    // Voice assistants and AI answer engines read this first.
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['h1', '[data-speakable]'],
+    },
+  },
+  ...schema,
+];
+
+const jsonLd = { '@context': 'https://schema.org', '@graph': graph };
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+{noindex ? <meta name="robots" content="noindex,follow" /> : <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />}
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:locale" content="en_US" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<meta name="author" content={SITE.name} />
+<meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#050628" media="(prefers-color-scheme: dark)" />
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />

@@ -1,0 +1,54 @@
+---
+// HOME-CONTENT.md §7 — styled, visually complete, deliberately non-functional.
+// No payment integration in phase 1.
+---
+
+<section class="donations" aria-labelledby="donations-h">
+  <div class="donations__card">
+    <p class="eyebrow">The Global Foundation for Human Aging Research</p>
+    <h2 class="donations__h" id="donations-h">The research needs funding.</h2>
+    <p class="donations__body">Giving opens soon.</p>
+    <p class="donations__state">Coming soon</p>
+  </div>
+</section>
+
+<style>
+  .donations {
+    padding: clamp(64px, 7vw, 110px) var(--gutter);
+  }
+
+  .donations__card {
+    max-width: 720px;
+    margin-inline: auto;
+    padding: clamp(40px, 5vw, 64px) clamp(24px, 4vw, 56px);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .donations__h {
+    margin: 0 0 16px;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1.1;
+  }
+
+  .donations__body {
+    margin: 0 0 28px;
+    font-size: 16px;
+    color: var(--ink-muted);
+  }
+
+  .donations__state {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    margin: 0;
+    padding-inline: 22px;
+    background: var(--accent-soft);
+    color: var(--ink-muted);
+    font-size: 15px;
+    border-radius: 999px;
+  }
+</style>

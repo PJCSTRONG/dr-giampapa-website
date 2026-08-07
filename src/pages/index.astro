@@ -1,0 +1,134 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Belief from '../components/Belief.astro';
+import Ventures from '../components/Ventures.astro';
+import Books from '../components/Books.astro';
+import Keynotes from '../components/Keynotes.astro';
+import Speaking from '../components/Speaking.astro';
+import Donations from '../components/Donations.astro';
+import Biography from '../components/Biography.astro';
+
+import { SITE } from '../data/site.js';
+import { BOOKS, LEAD_BOOK } from '../data/books.js';
+import { VENTURES } from '../data/ventures.js';
+import { KEYNOTES, TOPICS } from '../data/speaking.js';
+
+const personId = `${SITE.origin}/#person`;
+
+/**
+ * The Person node is the anchor of the whole graph. `knowsAbout` and
+ * `sameAs` are what let an answer engine connect "who is the epigenetic
+ * reprogramming surgeon" to this entity, so they are populated properly
+ * rather than left to a crawler's inference.
+ */
+const person = {
+  '@type': 'Person',
+  '@id': personId,
+  name: 'Vincent C. Giampapa',
+  alternateName: 'Dr. Vincent Giampapa',
+  honorificSuffix: 'MD, FACS',
+  url: `${SITE.origin}/`,
+  jobTitle: SITE.jobTitle,
+  description: SITE.description,
+  email: `mailto:${SITE.contact.email}`,
+  telephone: SITE.contact.phone,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: SITE.contact.street,
+    addressLocality: SITE.contact.locality,
+    addressRegion: SITE.contact.region,
+    postalCode: SITE.contact.postalCode,
+    addressCountry: SITE.contact.country,
+  },
+  sameAs: SITE.social.map((s) => s.href),
+  knowsAbout: [
+    'Cellular aging',
+    'Epigenetic reprogramming',
+    'Regenerative medicine',
+    'Stem cell therapy',
+    'Biological age measurement',
+    'Anti-aging medicine',
+    'Longevity',
+    'Plastic and reconstructive surgery',
+  ],
+  alumniOf: [
+    { '@type': 'CollegeOrUniversity', name: 'Mount Sinai School of Medicine' },
+    { '@type': 'CollegeOrUniversity', name: 'NYU Medical Center' },
+  ],
+  affiliation: [
+    {
+      '@type': 'Organization',
+      name: 'Paul F. Glenn Center for the Biology of Aging Research, Harvard Medical School',
+    },
+    { '@type': 'Organization', name: 'Regenerative Medicine Institute' },
+    { '@type': 'Organization', name: 'American Academy of Anti-Aging Medicine' },
+  ],
+  award: [
+    'Nobel Prize nomination, 2014 — cellular restoration technology',
+    'Edison Award — Healthycell',
+    'A4M Science & Technology Award — BioMarker Matrix Profile',
+  ],
+  hasOccupation: {
+    '@type': 'Occupation',
+    name: 'Keynote speaker',
+    occupationalCategory: 'Longevity and regenerative medicine',
+    skills: TOPICS.join('; '),
+  },
+  owns: VENTURES.map((v) => ({
+    '@type': 'Organization',
+    name: v.name,
+    url: v.href,
+    description: v.blurb,
+  })),
+};
+
+const allBooks = [LEAD_BOOK, ...BOOKS];
+
+const bookList = {
+  '@type': 'ItemList',
+  '@id': `${SITE.origin}/#books`,
+  name: 'Books by Vincent C. Giampapa, MD, FACS',
+  numberOfItems: allBooks.length,
+  itemListElement: allBooks.map((b, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': 'Book',
+      name: b.title,
+      alternativeHeadline: b.subtitle,
+      author: { '@id': personId },
+      inLanguage: 'en',
+      url: b.search,
+    },
+  })),
+};
+
+const videos = KEYNOTES.map((v) => ({
+  '@type': 'VideoObject',
+  '@id': `${SITE.origin}/#video-${v.id}`,
+  name: `${v.title} — ${v.venue}`,
+  description: v.description,
+  thumbnailUrl: `https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg`,
+  embedUrl: `https://www.youtube-nocookie.com/embed/${v.id}`,
+  contentUrl: `https://www.youtube.com/watch?v=${v.id}`,
+  // `uploadDate` is deliberately omitted rather than guessed. Google wants it
+  // for video rich results — add the real publish dates to KEYNOTES and wire
+  // them through here once confirmed.
+  publisher: { '@id': personId },
+  about: { '@id': personId },
+}));
+
+const schema = [person, bookList, ...videos];
+---
+
+<Base schema={schema}>
+  <Hero />
+  <Belief />
+  <Ventures />
+  <Books />
+  <Keynotes />
+  <Speaking />
+  <Donations />
+  <Biography />
+</Base>

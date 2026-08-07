@@ -1,0 +1,164 @@
+---
+import Seo from '../components/Seo.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+// Self-hosted so there is no render-blocking round trip to fonts.googleapis.com
+// and no third-party request on the critical path.
+import '../styles/fonts.css';
+import '../styles/global.css';
+
+// Imported for the URL only, so the preload below points at the real
+// content-hashed filename instead of a hand-written guess.
+import geistLatin from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
+import cormorantLatin from '@fontsource-variable/cormorant-garamond/files/cormorant-garamond-latin-wght-normal.woff2?url';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+  schema?: Record<string, unknown>[];
+  /** Image to warm up for LCP, if the page has a known hero image. */
+  preloadImage?: string;
+}
+
+const { title, description, noindex, schema, preloadImage } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    {/* The two faces above the fold. The rest load without blocking paint. */}
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={geistLatin} />
+    <link rel="preload" as="font" type="font/woff2" crossorigin href={cormorantLatin} />
+
+    {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
+
+    <Seo title={title} description={description} noindex={noindex} schema={schema} />
+
+    {/* Flag JS before paint so reveal styles never trap content invisible. */}
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      // Everything interactive on this site, in one small module.
+      const html = document.documentElement;
+
+      // 1. Header gains a translucent background once you leave the hero.
+      const header = document.querySelector<HTMLElement>('[data-header]');
+      if (header) {
+        const onScroll = () => header.classList.toggle('is-stuck', window.scrollY > 72);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+      }
+
+      // 2. Mobile menu.
+      const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+      const menu = document.querySelector<HTMLElement>('[data-menu]');
+      if (toggle && menu) {
+        const setOpen = (open: boolean) => {
+          toggle.setAttribute('aria-expanded', String(open));
+          menu.hidden = !open;
+        };
+        toggle.addEventListener('click', () =>
+          setOpen(toggle.getAttribute('aria-expanded') !== 'true'),
+        );
+        menu.addEventListener('click', (e) => {
+          if ((e.target as HTMLElement).tagName === 'A') setOpen(false);
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') setOpen(false);
+        });
+      }
+
+      // 3. YouTube facade — no third-party JS until the visitor asks for it.
+      document.querySelectorAll<HTMLButtonElement>('[data-video]').forEach((btn) => {
+        btn.addEventListener(
+          'click',
+          () => {
+            const id = btn.dataset.video;
+            const frame = document.createElement('iframe');
+            // nocookie host: no tracking cookie unless the video is actually played.
+            frame.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+            frame.title = btn.dataset.videoTitle ?? 'Keynote';
+            frame.allow =
+              'accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture';
+            frame.allowFullscreen = true;
+            frame.loading = 'eager';
+            btn.replaceWith(frame);
+          },
+          { once: true },
+        );
+      });
+
+      // 4. Reveal on scroll.
+      //
+      // A scroll sweep rather than an IntersectionObserver, and deliberately
+      // NOT gated behind requestAnimationFrame.
+      //
+      // Both an observer callback and rAF are tied to the frame lifecycle, so
+      // neither runs in a hidden or heavily throttled tab. Anything that makes
+      // content *appear* must not depend on them: a prerendered or background
+      // tab, a jump to an #anchor, or a restored scroll position would
+      // otherwise leave sections stuck at opacity 0 with no way to recover.
+      //
+      // So the sweep runs synchronously off a passive scroll listener. It
+      // measures at most a couple of dozen elements, the set shrinks as they
+      // resolve, and the listener detaches the moment it empties — after which
+      // scrolling costs literally nothing.
+      const pending = new Set(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const sweep = (animate: boolean) => {
+        const limit = window.innerHeight * 0.88;
+        pending.forEach((el) => {
+          if (animate && el.getBoundingClientRect().top > limit) return;
+          // Anything already on screen at load appears without animating.
+          el.style.transitionDelay = animate ? `${Number(el.dataset.reveal || 0) * 60}ms` : '0ms';
+          el.classList.add('is-in');
+          pending.delete(el);
+        });
+        if (!pending.size) {
+          window.removeEventListener('scroll', onScroll2);
+          document.removeEventListener('visibilitychange', onShow);
+        }
+      };
+
+      const onScroll2 = () => sweep(true);
+      const onShow = () => {
+        if (!document.hidden) sweep(true);
+      };
+
+      if (reduced) {
+        // reduced-motion: show everything at once, no transition.
+        sweep(false);
+      } else {
+        sweep(true);
+        if (pending.size) {
+          window.addEventListener('scroll', onScroll2, { passive: true });
+          document.addEventListener('visibilitychange', onShow);
+          // Late web-font metrics shift every offset on the page; re-measure.
+          document.fonts?.ready.then(() => sweep(true));
+        }
+      }
+
+      void html;
+    </script>
+  </body>
+</html>

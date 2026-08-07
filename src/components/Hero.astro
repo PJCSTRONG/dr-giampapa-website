@@ -1,0 +1,182 @@
+---
+import { Image } from 'astro:assets';
+import { OUTLETS } from '../data/speaking.js';
+import { HERO } from '../data/site.js';
+import { asset } from '../lib/assets.js';
+
+const portrait = asset('portrait/drg-cutout.webp');
+const asSeenOn = asset('as-seen-on.png');
+
+const outletAlt = `As seen on ${OUTLETS.join(', ')}`;
+---
+
+<section class="hero" id="top">
+  {
+    portrait && (
+      <Image
+        class="hero__cutout"
+        src={portrait}
+        alt="Dr. Vincent Giampapa, MD, FACS"
+        widths={[520, 760, 1040, 1400]}
+        sizes="(max-width: 760px) 100vw, 56vw"
+        loading="eager"
+        fetchpriority="high"
+        decoding="sync"
+        format="webp"
+      />
+    )
+  }
+
+  <div class="hero__row">
+    <div class="hero__copy">
+      <h1 class="hero__h1" data-speakable>
+        {HERO.headline}<span class="hero__dot">.</span>
+      </h1>
+
+      <p class="hero__lede">{HERO.lede}</p>
+
+      <a class="btn btn--primary hero__cta" href="#about">{HERO.cta}</a>
+    </div>
+
+    <div class="hero__seen">
+      {
+        asSeenOn && (
+          <Image
+            src={asSeenOn}
+            alt={outletAlt}
+            widths={[420, 640, 1000, 1180]}
+            sizes="(max-width: 760px) 92vw, 27vw"
+            loading="eager"
+            format="webp"
+          />
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: clamp(560px, 86vh, 900px);
+    padding: 88px clamp(18px, 3vw, 80px) 0;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  /* The cut-out is the centrepiece: centred on the section, bleeding off the
+     bottom edge, with the copy in front of it and the media wall behind. */
+  .hero__cutout {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    translate: -50% 0;
+    width: 56vw;
+    height: auto;
+    max-height: calc(100% - 52px);
+    object-fit: contain;
+    object-position: bottom center;
+    z-index: 1;
+  }
+
+  .hero__row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(16px, 2vw, 40px);
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-bottom: clamp(40px, 6vh, 80px);
+  }
+
+  .hero__copy {
+    position: relative;
+    z-index: 2;
+    flex: 0 1 clamp(280px, 26vw, 470px);
+    min-width: 0;
+    margin-left: clamp(0px, 2vw, 44px);
+  }
+
+  .hero__h1 {
+    margin: 0 0 clamp(20px, 2.4vw, 30px);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .hero__dot {
+    color: var(--accent);
+  }
+
+  .hero__lede {
+    margin: 0 0 clamp(28px, 3.2vw, 40px);
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink-muted);
+  }
+
+  .hero__seen {
+    position: relative;
+    z-index: 0;
+    flex: 0 1 clamp(210px, 27vw, 500px);
+    min-width: 0;
+    margin-right: clamp(0px, 1.6vw, 36px);
+  }
+  .hero__seen :global(img) {
+    width: 100%;
+    height: auto;
+    opacity: 0.9;
+  }
+
+  /* Below 760px the design stacks: copy, portrait, then the media wall behind
+     a rule. `display: contents` dissolves the row so all three become siblings
+     of the same column and can be reordered directly. */
+  @media (max-width: 760px) {
+    .hero {
+      flex-direction: column;
+      align-items: stretch;
+      min-height: 0;
+      padding: 104px 20px 0;
+    }
+
+    .hero__row {
+      display: contents;
+    }
+
+    .hero__copy {
+      order: 1;
+      margin-left: 0;
+    }
+
+    .hero__cutout {
+      position: static;
+      order: 2;
+      translate: none;
+      width: min(100%, 420px);
+      max-height: none;
+      margin: 24px auto -1px;
+    }
+
+    .hero__seen {
+      order: 3;
+      margin-right: 0;
+      padding: 28px 0 32px;
+      border-top: 1px solid var(--border);
+    }
+    .hero__seen :global(img) {
+      width: min(100%, 420px);
+      margin-inline: auto;
+    }
+
+    .hero__cta {
+      width: 100%;
+      max-width: 340px;
+    }
+  }
+</style>

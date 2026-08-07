@@ -1,0 +1,154 @@
+---
+import { SITE } from '../data/site.js';
+import { COMPLIANCE } from '../data/bio.js';
+
+const year = new Date().getFullYear();
+const { contact } = SITE;
+---
+
+<footer class="ft" id="contact">
+  <div class="wrap">
+    <div class="ft__cols">
+      <div>
+        <p class="ft__mark">{SITE.name}</p>
+        <p class="ft__tagline">{SITE.tagline}</p>
+        <address class="ft__address">
+          {contact.street}, {contact.locality}, {contact.region}
+          {contact.postalCode}<br />
+          <a class="nums" href={`tel:${contact.phoneHref}`}>{contact.phone}</a><br />
+          <a href={`mailto:${contact.email}`}>{contact.email}</a>
+        </address>
+      </div>
+
+      <nav aria-labelledby="ft-nav">
+        <p class="ft__head" id="ft-nav">Navigate</p>
+        <ul>{SITE.nav.map((i) => <li><a href={i.href}>{i.label}</a></li>)}</ul>
+      </nav>
+
+      <nav aria-labelledby="ft-legal">
+        <p class="ft__head" id="ft-legal">Legal</p>
+        <ul>{SITE.legal.map((i) => <li><a href={i.href}>{i.label}</a></li>)}</ul>
+      </nav>
+
+      <nav aria-labelledby="ft-social">
+        <p class="ft__head" id="ft-social">Follow</p>
+        <ul>
+          {
+            SITE.social.map((i) => (
+              <li>
+                <a href={i.href} rel="me noopener">
+                  {i.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <section class="ft__compliance" aria-labelledby="ft-compliance">
+      <h2 class="ft__head" id="ft-compliance">Medical compliance statement</h2>
+      {
+        COMPLIANCE.map((c) => (
+          <p>
+            <strong>{c.lead}</strong> {c.body}
+          </p>
+        ))
+      }
+    </section>
+
+    <p class="ft__copy nums">&copy; {year} {SITE.name}. All rights reserved.</p>
+  </div>
+</footer>
+
+<style>
+  .ft {
+    background: var(--ink);
+    color: #fff;
+    padding: clamp(72px, 8vw, 120px) var(--gutter) 40px;
+  }
+
+  .ft__cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(228px, 100%), 1fr));
+    gap: clamp(40px, 4vw, 64px);
+  }
+
+  .ft__mark {
+    margin: 0 0 20px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .ft__tagline {
+    margin: 0 0 28px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    color: rgb(255 255 255 / 0.75);
+  }
+
+  .ft__address {
+    font-style: normal;
+    font-size: 15px;
+    line-height: 1.8;
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  .ft__head {
+    margin: 0 0 20px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.5);
+  }
+
+  .ft ul {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ft a {
+    color: rgb(255 255 255 / 0.75);
+    font-size: 15px;
+  }
+  .ft a:hover {
+    color: #fff;
+  }
+
+  .ft__compliance {
+    margin-top: clamp(56px, 6vw, 88px);
+    padding-top: 40px;
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+    max-width: 900px;
+  }
+  .ft__compliance p {
+    margin: 0 0 16px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: rgb(255 255 255 / 0.62);
+  }
+  .ft__compliance p:last-child {
+    margin-bottom: 0;
+  }
+  .ft__compliance strong {
+    color: rgb(255 255 255 / 0.85);
+    font-weight: 500;
+  }
+
+  .ft__copy {
+    margin: 48px 0 0;
+    font-size: 13px;
+    color: rgb(255 255 255 / 0.45);
+  }
+</style>

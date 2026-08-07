@@ -1,0 +1,236 @@
+---
+import { Image } from 'astro:assets';
+import { BOOKS, LEAD_BOOK } from '../data/books.js';
+import { asset } from '../lib/assets.js';
+
+const leadCover = asset(`books/${LEAD_BOOK.cover}`);
+---
+
+<section class="section books" id="books" aria-labelledby="books-h">
+  <div class="wrap">
+    <p class="eyebrow">Published work</p>
+    <h2 class="display books__h" id="books-h" data-reveal="0">
+      He wrote the textbook. Then seven more.
+    </h2>
+
+    <article class="lead" data-reveal="0">
+      {
+        leadCover && (
+          <div class="lead__cover">
+            <Image
+              src={leadCover}
+              alt={`${LEAD_BOOK.title} — book cover`}
+              widths={[280, 380, 760]}
+              sizes="(max-width: 760px) 70vw, 340px"
+              loading="lazy"
+              format="webp"
+            />
+          </div>
+        )
+      }
+
+      <div class="lead__body">
+        <p class="lead__flag">Newest</p>
+        <h3 class="lead__title">{LEAD_BOOK.title}</h3>
+        <p class="lead__sub">{LEAD_BOOK.subtitle}</p>
+        <p class="lead__blurb">{LEAD_BOOK.blurb}</p>
+        <p class="lead__authors">{LEAD_BOOK.authors}</p>
+        <a class="findit" href={LEAD_BOOK.search} rel="noopener">Find it</a>
+      </div>
+    </article>
+
+    <ul class="grid">
+      {
+        BOOKS.map((book, i) => {
+          const cover = asset(`books/${book.cover}`);
+          return (
+            <li class="book" data-reveal={i % 4}>
+              <a class="book__link" href={book.search} rel="noopener">
+                <span class="book__coverWrap">
+                  {cover ? (
+                    <Image
+                      src={cover}
+                      alt={`${book.title} — book cover`}
+                      widths={[196, 392]}
+                      sizes="(max-width: 760px) 45vw, 220px"
+                      loading="lazy"
+                      format="webp"
+                    />
+                  ) : (
+                    <span class="book__placeholder">
+                      <span>{book.title}</span>
+                    </span>
+                  )}
+                  {book.badge && <span class="book__badge">{book.badge}</span>}
+                </span>
+                <span class="book__title">{book.title}</span>
+                <span class="book__meta nums">{book.meta}</span>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .books {
+    background: var(--bg-card);
+  }
+
+  .books__h {
+    margin-bottom: clamp(48px, 5.5vw, 80px);
+    max-width: 700px;
+  }
+
+  .lead {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(32px, 4.5vw, 72px);
+    align-items: flex-start;
+    padding-bottom: clamp(48px, 6vw, 88px);
+    border-bottom: 1px solid var(--border);
+  }
+  .lead__cover {
+    flex: 0 1 340px;
+    width: 100%;
+    max-width: 380px;
+    /* A flex item's automatic minimum size is its content's min-content width.
+       Without this the 1600px-wide cover refuses to shrink below its intrinsic
+       size and blows the row out. */
+    min-width: 0;
+  }
+  .lead__cover :global(img) {
+    width: 100%;
+    height: auto;
+  }
+  .lead__body {
+    flex: 1 1 380px;
+    min-width: 0;
+    max-width: 620px;
+  }
+
+  .lead__flag {
+    margin: 0 0 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .lead__title {
+    margin: 0 0 10px;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(30px, 3.2vw, 42px);
+    line-height: 1.1;
+  }
+  .lead__sub {
+    margin: 0 0 24px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    color: var(--ink-muted);
+  }
+  .lead__blurb {
+    margin: 0 0 20px;
+    max-width: 60ch;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+  .lead__authors {
+    margin: 0 0 28px;
+    font-size: 14px;
+    color: var(--ink-muted);
+  }
+
+  .findit {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    font-size: 16px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--border);
+    transition:
+      border-color 200ms ease,
+      color 200ms ease;
+  }
+  .findit:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(196px, 45%), 1fr));
+    gap: clamp(24px, 3vw, 40px);
+    margin: clamp(48px, 6vw, 80px) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .book__link {
+    display: block;
+    color: inherit;
+  }
+  .book__coverWrap {
+    position: relative;
+    display: block;
+  }
+  .book__coverWrap :global(img) {
+    width: 100%;
+    height: auto;
+    transition: transform 300ms var(--ease);
+  }
+  .book__link:hover .book__coverWrap :global(img) {
+    transform: translateY(-4px);
+  }
+
+  .book__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 2 / 3;
+    padding: 20px;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 20px;
+    line-height: 1.2;
+    color: var(--ink-muted);
+  }
+
+  .book__badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 5px 9px;
+    background: var(--accent-soft);
+    color: var(--ink-muted);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  .book__title {
+    display: block;
+    margin: 14px 0 4px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .book__link:hover .book__title {
+    color: var(--accent);
+  }
+  .book__meta {
+    display: block;
+    font-size: 14px;
+    color: var(--ink-muted);
+  }
+</style>

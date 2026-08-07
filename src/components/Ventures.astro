@@ -1,0 +1,132 @@
+---
+import { Image } from 'astro:assets';
+import { VENTURES } from '../data/ventures.js';
+import { asset } from '../lib/assets.js';
+
+/**
+ * Reserve the logo row only once at least one mark actually exists. While the
+ * logo set is outstanding, every card would otherwise open with an identical
+ * 68px void that reads as a broken image. Once the files land, the row comes
+ * back for all eight cards — including Dorada, whose mark is still missing —
+ * so they stay on a common baseline.
+ */
+const hasAnyLogo = VENTURES.some((v) => v.logo && asset(`logos/${v.logo}`));
+---
+
+<section class="section" id="research" aria-labelledby="ventures-h">
+  <div class="wrap">
+    <p class="eyebrow">Ventures &amp; institutions</p>
+    <h2 class="display ventures__h" id="ventures-h" data-reveal="0">Eight companies. One problem.</h2>
+
+    <ul class="ventures">
+      {
+        VENTURES.map((v) => {
+          const logo = v.logo ? asset(`logos/${v.logo}`) : undefined;
+          return (
+            <li class="card">
+              <a class="card__link" href={v.href} rel="noopener">
+                {/* The slot keeps its height with or without a mark, so cards
+                    stay on a common baseline while logos are still missing.
+                    It stays empty rather than falling back to a wordmark —
+                    the company name already sits directly beneath it, and
+                    printing it twice reads as a bug, not as a design. */}
+                <span class="card__logo">
+                  {logo && (
+                    <Image
+                      src={logo}
+                      alt=""
+                      height={44}
+                      widths={[160, 320]}
+                      sizes="160px"
+                      loading="lazy"
+                      format="webp"
+                    />
+                  )}
+                </span>
+                <span class="card__name">{v.name}</span>
+                <span class="card__role">{v.role}</span>
+                <span class="card__blurb">{v.blurb}</span>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .ventures__h {
+    margin-bottom: clamp(40px, 5vw, 72px);
+    max-width: 640px;
+  }
+
+  .ventures {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(258px, 100%), 1fr));
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .card {
+    background: var(--bg);
+    transition: background 200ms ease;
+  }
+  .card:hover {
+    background: var(--bg-card);
+  }
+
+  .card__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: clamp(28px, 3vw, 40px) clamp(24px, 2.4vw, 32px);
+    color: inherit;
+  }
+
+  .card__logo {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    margin-bottom: 24px;
+  }
+  .card__logo :global(img) {
+    width: auto;
+    height: 44px;
+    max-width: 100%;
+    object-fit: contain;
+    object-position: left center;
+    opacity: 0.72;
+  }
+
+  .card__name {
+    margin-bottom: 22px;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    /* "The Global Foundation" runs to two lines where every other name fits on
+       one. Reserving both lines keeps each card's role and blurb on a shared
+       baseline instead of dropping that one card out of step. */
+    min-height: 2.3em;
+  }
+
+  .card__role {
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .card__blurb {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-muted);
+  }
+</style>

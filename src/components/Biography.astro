@@ -1,0 +1,137 @@
+---
+import { Image } from 'astro:assets';
+import { BIO, STATS } from '../data/bio.js';
+import { asset } from '../lib/assets.js';
+
+// ASSET-REQUEST.md §1.2 — an environmental or on-stage shot. Drop
+// portrait/bio.jpg (or .webp) in to enable; the section reflows without it.
+const bioPortrait = asset('portrait/bio.webp') ?? asset('portrait/bio.jpg');
+---
+
+<section class="section" id="about" aria-labelledby="bio-h">
+  <div class="wrap">
+    <ul class="stats">
+      {
+        STATS.map((s) => (
+          <li>
+            <span class="stats__value nums">{s.value}</span>
+            <span class="stats__label">{s.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="bio">
+      {
+        bioPortrait && (
+          <div class="bio__figure" data-reveal="0">
+            <Image
+              src={bioPortrait}
+              alt="Dr. Vincent Giampapa"
+              widths={[420, 640, 920]}
+              sizes="(max-width: 860px) 90vw, 420px"
+              loading="lazy"
+              format="webp"
+            />
+          </div>
+        )
+      }
+
+      <div class="bio__body">
+        <p class="eyebrow">Biography</p>
+        <h2 class="display bio__h" id="bio-h" data-reveal="0">Learn more about Dr. Giampapa</h2>
+
+        <div class="bio__prose">
+          <p class="bio__opening">{BIO[0]}</p>
+          {BIO.slice(1).map((para) => <p>{para}</p>)}
+        </div>
+
+        {/* The design pointed this at #about — the section it already sits in.
+            Same label, but it now goes to the full biography page. */}
+        <a class="btn btn--primary bio__cta" href="/about">Learn more about Dr. Giampapa</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(172px, 45%), 1fr));
+    margin: 0 0 clamp(72px, 8vw, 128px);
+    padding: 0;
+    list-style: none;
+  }
+  .stats li {
+    padding-inline: 20px;
+    border-left: 1px solid var(--border);
+  }
+  .stats__value {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(48px, 5.2vw, 76px);
+    line-height: 1;
+  }
+  .stats__label {
+    display: block;
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  .bio {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(40px, 5vw, 80px);
+    align-items: flex-start;
+  }
+
+  .bio__figure {
+    flex: 0 1 420px;
+    max-width: 460px;
+    width: 100%;
+  }
+  .bio__figure :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+
+  .bio__body {
+    flex: 1 1 460px;
+    min-width: 0;
+  }
+
+  .bio__h {
+    margin-bottom: clamp(32px, 3.6vw, 48px);
+  }
+
+  .bio__prose {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 68ch;
+  }
+  .bio__prose p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+  .bio__opening {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(22px, 2.2vw, 28px) !important;
+    line-height: 1.4 !important;
+  }
+
+  .bio__cta {
+    margin-top: clamp(32px, 3.6vw, 44px);
+  }
+</style>

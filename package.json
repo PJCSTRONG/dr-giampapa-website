@@ -1,0 +1,22 @@
+{
+  "name": "drgiampapa-org",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Website for Vincent C. Giampapa, MD, FACS — cellular aging and longevity medicine.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.6.0",
+    "@fontsource-variable/cormorant-garamond": "^5.2.5",
+    "@fontsource-variable/geist": "^5.2.5",
+    "@fontsource-variable/geist-mono": "^5.2.5",
+    "astro": "^5.14.1",
+    "sharp": "^0.34.4"
+  }
+}

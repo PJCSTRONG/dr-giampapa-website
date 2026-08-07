@@ -1,0 +1,117 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../data/site.js';
+import { STATS } from '../data/bio.js';
+
+/**
+ * The full third-person biography, HOME-CONTENT.md §8, corrected and
+ * consolidated. The home page carries a condensed version; this page exists so
+ * the long-tail credential queries ("Giampapa Nobel nomination", "BioMarker
+ * Matrix Profile", "Giampapa Harvard Glenn Center") have something to land on.
+ */
+const paragraphs = [
+  'Dr. Vincent Giampapa is board certified in Plastic and Reconstructive Surgery and in Anti-Aging Medicine, and is the Founding Director of Plastic Surgery Center International, The Giampapa Institute for Anti-Aging Medical Therapy, and the Regenerative Medicine Institute (RMI) in Costa Rica — which he believes will become the global portal for stem cell therapy and advanced regenerative medicine research, anchored by an on-site biotechnology incubator park.',
+  'In 2014, Dr. Giampapa was nominated for a Nobel Prize for groundbreaking research into cellular restoration technology, conducted with the research team at Rutgers University.',
+  'He is a co-founder of the American Academy of Anti-Aging Medicine (A4M) — now more than 26,000 members across over 110 nations — and served as the first President of the American Board of Anti-Aging Medicine. He is the founder of Healthycell, an advanced cell health nutritional supplement company, and of Stem Bank, a blood-derived stem cell extraction and storage company.',
+  'Dr. Giampapa has been a keynote speaker at international forums including the Second International Vatican Adult Stem Cell Conference in Rome and the Swedish American Life Science Summit in Stockholm, and was invited by the Chinese government to speak at Beijing University on “Stem Cell Technologies of the Future.” He has lectured to R360, Gobundance, and the international chapters of YPO and YPO Gold, and recently delivered a keynote in Dubai for Aster Medicine on the future of regenerative medicine. He appeared on the Science Channel special Stem Cell Universe with host Stephen Hawking.',
+  'He received an Edison Award for his development of the Healthycell nutritional supplement and an A4M Science & Technology Award for the BioMarker Matrix Profile — the first computer program to measure aging. He served as a consultant to NASA on the space shuttle robotic arm, drawing on his sensate prosthesis patents, and has filed or been awarded more than 24 United States patents for cell culture delivery techniques, stem cell reprogramming, drug delivery systems, and surgical instrument design.',
+  'Dr. Giampapa received his MD from Mount Sinai School of Medicine in New York and trained in plastic surgery at St. Luke’s and Columbia Presbyterian Hospitals, followed by a microsurgery and surgery fellowship at NYU Medical Center. He is a Fellow of the American College of Surgeons and served as Director of Microsurgery and Replantation Surgery at the University of Medicine and Dentistry of New Jersey. He has published in the Annals of Plastic Surgery, the Journal of Plastic and Reconstructive Surgery, the Journal of Reconstructive Microsurgery, the Journal of Anti-Aging Medicine, and the Journal of Stem Cells and Development, and has contributed more than 20 chapters to medical textbooks.',
+  'He is currently a Visiting Scholar at the Sinclair Lab, Paul F. Glenn Center for the Biology of Aging Research at Harvard Medical School, where his work focuses on epigenetic reprogramming.',
+];
+
+const schema = [
+  {
+    '@type': 'AboutPage',
+    '@id': `${SITE.origin}/about/#about`,
+    mainEntity: { '@id': `${SITE.origin}/#person` },
+  },
+];
+---
+
+<Base
+  title="Biography — Vincent C. Giampapa, MD, FACS"
+  description="The full biography of Vincent C. Giampapa, MD, FACS: co-founder of the American Academy of Anti-Aging Medicine, 2014 Nobel nominee, holder of 24+ US patents, and Visiting Scholar at Harvard's Paul F. Glenn Center for the Biology of Aging Research."
+  schema={schema}
+>
+  <article class="page">
+    <div class="page__wrap">
+      <p class="eyebrow">Biography</p>
+      <h1 class="page__h1">Thirty-four years. One question.</h1>
+      <p class="page__standfirst" data-speakable>
+        Why do cells age, and what can be done about it?
+      </p>
+
+      <ul class="page__stats">
+        {
+          STATS.map((s) => (
+            <li>
+              <span class="nums">{s.value}</span>
+              {s.label}
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="page__prose">
+        {paragraphs.map((p) => <p>{p}</p>)}
+      </div>
+
+      <a class="btn btn--primary page__cta" href="/#speaking">Bring him to your stage</a>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .page {
+    padding: 136px var(--gutter) var(--section-y);
+  }
+  .page__wrap {
+    max-width: 760px;
+    margin-inline: auto;
+  }
+  .page__h1 {
+    margin: 0 0 20px;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(38px, 5vw, 64px);
+    line-height: 1.03;
+    letter-spacing: -0.015em;
+  }
+  .page__standfirst {
+    margin: 0 0 40px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(22px, 2.4vw, 30px);
+    color: var(--ink-muted);
+  }
+  .page__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 32px;
+    margin: 0 0 48px;
+    padding: 24px 0;
+    border-block: 1px solid var(--border);
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .page__stats span {
+    margin-right: 6px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 0;
+    color: var(--ink);
+  }
+  .page__prose p {
+    margin: 0 0 22px;
+    font-size: 17px;
+    line-height: 1.75;
+  }
+  .page__cta {
+    margin-top: 24px;
+  }
+</style>

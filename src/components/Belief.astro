@@ -1,0 +1,113 @@
+---
+import { Image } from 'astro:assets';
+import { BELIEF_LEAD, BELIEFS } from '../data/bio.js';
+import { SITE } from '../data/site.js';
+import { asset } from '../lib/assets.js';
+
+// Still outstanding — ASSET-REQUEST.md rev 2 flags the signature as the single
+// highest-impact missing asset. Drop signature.png into src/assets/ to enable.
+const signature = asset('signature.png');
+---
+
+<section class="belief" aria-labelledby="belief-h">
+  <div class="panel belief__panel">
+    <div class="belief__inner">
+      {/* VERBAL-BRAND.md Part 3, option C: the Reed-edited line hooks,
+          the five long-form beliefs reward. */}
+      <h2 class="belief__lead" id="belief-h" data-reveal="0" data-speakable>
+        {BELIEF_LEAD}
+      </h2>
+
+      <div class="belief__list">
+        {
+          BELIEFS.map((line, i) => (
+            <p class="belief__item" data-reveal={Math.min(i, 4)}>
+              {line}
+            </p>
+          ))
+        }
+      </div>
+
+      <div class="belief__sign">
+        {
+          signature && (
+            <Image
+              src={signature}
+              alt=""
+              widths={[200, 400]}
+              sizes="200px"
+              loading="lazy"
+              format="webp"
+            />
+          )
+        }
+        <p>{SITE.name}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .belief {
+    background: var(--bg-alt);
+    padding-block: clamp(40px, 5vw, 72px);
+  }
+
+  .belief__panel {
+    padding: clamp(72px, 10vw, 148px) clamp(24px, 5vw, 96px);
+  }
+
+  .belief__inner {
+    max-width: 820px;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .belief__lead {
+    margin: 0 0 clamp(48px, 6vw, 80px);
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(32px, 4.2vw, 52px);
+    line-height: 1.14;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+
+  .belief__list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(36px, 4.4vw, 56px);
+    max-width: 720px;
+    margin-inline: auto;
+  }
+
+  .belief__item {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(22px, 2.4vw, 32px);
+    line-height: 1.45;
+    color: rgb(255 255 255 / 0.92);
+  }
+
+  .belief__sign {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: clamp(56px, 7vw, 96px);
+  }
+  .belief__sign :global(img) {
+    width: 200px;
+    height: auto;
+  }
+  .belief__sign p {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.6);
+  }
+</style>
